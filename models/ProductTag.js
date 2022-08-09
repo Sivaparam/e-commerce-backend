@@ -7,19 +7,26 @@ const tag = require('./Tag');
 
 class ProductTag extends Model {}
 
+//producttag table fields
 ProductTag.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true
+    },
     product_id: {
       type: DataTypes.INTEGER,
       references:{
-        model: product,
+        model: 'product',
         key: 'id'
       }
     },
     tag_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: tag,
+        model: 'tag',
         key: 'id'
       }
     }

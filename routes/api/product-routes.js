@@ -8,34 +8,44 @@ router.get('/', (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
   Product.findAll({
-    attributes: ['id', 'product_name', 'price', 'stock'],
-    include: Category, Tag,
-    attributes: ['category_name', 'tag_name']
+    include: [{
+      model: Category,
+      attributes: ['id', 'category_name']
+    },
+    {
+      model: Tag,
+      attributes: ['id', 'tag_name']
+    }]
   })
-  .then(productData => {
-    res.json(productData);
-  }).catch(err => {
-    res.json(err);
-  })
+    .then(productData => {
+      res.json(productData);
+    }).catch(err => {
+      res.json(err);
+    })
 });
 
 // get one product
 router.get('/:id', (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
-  Product.findByPk({
+  Product.findOne({
     where: {
       id: req.params.id
-  },
-   include: {Category, Tag,
-    attributes: ['category_name', 'tag_name']
-  }
-})
-  .then(productData => {
-    res.json(productData);
-  }).catch(err => {
-    res.json(err);
+    },
+    include: [{
+      model: Category,
+      attributes: ['id', 'category_name']
+    },
+    {
+      model: Tag,
+      attributes: ['id', 'tag_name']
+    }]
   })
+    .then(productData => {
+      res.json(productData);
+    }).catch(err => {
+      res.json(err);
+    })
 });
 
 // create new product
@@ -59,7 +69,7 @@ router.post('/', (req, res) => {
 
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
       if (req.body.tagIds.length) {
-        const productTagIdArr = req.body.tagIds.map((tag_id) => {
+        const productTagIdArr = req.body.tagIds.map(({tag_id}) => {
           return {
             product_id: product.id,
             tag_id,
@@ -125,7 +135,7 @@ router.delete('/:id', (req, res) => {
     where: {
       id: req.params.id
     }
-  }).then(productData => { 
+  }).then(productData => {
     res.json(productData);
   }).catch(err => {
     res.json(err);
